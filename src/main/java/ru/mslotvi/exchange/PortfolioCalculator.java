@@ -28,23 +28,18 @@ public class PortfolioCalculator {
     public List<Portfolio> calculateEfficientFrontier(int precision) {
         Map<Double, Portfolio> efficientPortfolios = new HashMap<>();
 
-        // Проходим по всем портфелям
         for (Portfolio portfolio : portfolios) {
             double portfolioRisk = portfolio.getRisk();
             double portfolioReturn = portfolio.getExpectedReturn();
 
-            // Округляем риск до заданного числа знаков после запятой
             double roundedRisk = roundToPrecision(portfolioRisk, precision);
 
-            // Если для этого уровня риска еще нет портфеля, или текущий портфель дает большую доходность
-            // для данного уровня риска, заменяем портфель
             if (!efficientPortfolios.containsKey(roundedRisk) ||
                     efficientPortfolios.get(roundedRisk).getExpectedReturn() < portfolioReturn) {
                 efficientPortfolios.put(roundedRisk, portfolio);
             }
         }
 
-        // Возвращаем список портфелей, которые составляют эффективную линию
         return new ArrayList<>(efficientPortfolios.values());
     }
 

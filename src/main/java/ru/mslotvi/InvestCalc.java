@@ -33,7 +33,7 @@ public class InvestCalc {
 
 
             System.out.println("Вычисляю...");
-            var frontier = exchange.getEfficientFrontier(Set.of("KROTP", "SOFL", "RNFT", "RTSB"), oneYearAgo, currentDate);
+            var frontier = exchange.createPortfolioCalculator(Set.of("KROTP", "SOFL", "RNFT", "RTSB"), oneYearAgo, currentDate);
 //
 
             frontier.generatePortfolios(20);

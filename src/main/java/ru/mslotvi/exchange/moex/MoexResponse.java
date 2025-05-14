@@ -8,7 +8,16 @@ import ru.mslotvi.exchange.ExchangeTradeRecord;
 
 import java.util.Date;
 import java.util.List;
-
+/**
+ * Представляет ответ от MOEX с данными о сделках на бирже.
+ * <p>Этот класс реализует интерфейс {@link ExchangeDateSnapshot} и содержит данные, полученные от MOEX,
+ * такие как истории сделок, метаданные, курсы и другие показатели.</p>
+ *
+ * <p>Включает информацию о сделках в виде списка {@link TradeRecord}, а также метаданные для работы с историей сделок.</p>
+ *
+ * @see ExchangeDateSnapshot
+ * @see TradeRecord
+ */
 @Data
 @Accessors(fluent = true)
 public class MoexResponse implements ExchangeDateSnapshot {
@@ -16,11 +25,21 @@ public class MoexResponse implements ExchangeDateSnapshot {
     private History history;
     private HistoryCursor historyCursor;
 
+    /**
+     * Возвращает список записей о сделках для данного ответа.
+     *
+     * @return Список {@link TradeRecord}, представляющих сделки для данного ответа.
+     */
     @Override
     public List<? extends ExchangeTradeRecord> tradeRecords() {
         return history.data;
     }
 
+    /**
+     * Вложенный класс, представляющий историю сделок.
+     * <p>Этот класс содержит метаданные истории сделок, информацию о колонках данных
+     * и саму информацию о сделках в виде списка {@link TradeRecord}.</p>
+     */
     @Data
     @Accessors(fluent = true)
     public static class History {
@@ -29,6 +48,11 @@ public class MoexResponse implements ExchangeDateSnapshot {
         private List<TradeRecord> data;
     }
 
+    /**
+     * Вложенный класс, представляющий метаданные для каждой сделки.
+     * <p>Метаданные включают в себя различные поля, такие как идентификатор доски, дата сделки, типы сделок,
+     * цены, объемы и другие показатели для анализа сделок на бирже.</p>
+     */
     @Data
     @Accessors(fluent = true)
     public class Metadata {
@@ -105,6 +129,11 @@ public class MoexResponse implements ExchangeDateSnapshot {
         @SerializedName("TRADE_SESSION_DATE")
         private FieldType<String> tradeSessionDate;
     }
+
+    /**
+     * Вложенный класс, представляющий тип данных для каждого поля в метаданных.
+     * <p>Тип данных включает значение поля, его тип, размер и максимальный размер.</p>
+     */
     @Data
     @Accessors(fluent = true)
     static class FieldType<T> {
@@ -114,6 +143,10 @@ public class MoexResponse implements ExchangeDateSnapshot {
         private int maxSize;
     }
 
+    /**
+     * Вложенный класс, представляющий информацию о курсоре истории (например, данные о текущей странице).
+     * <p>Этот класс содержит метаданные о курсоре и данные, которые используются для постраничного отображения информации.</p>
+     */
     @Data
     @Accessors(fluent = true)
     public static class HistoryCursor {
@@ -121,6 +154,11 @@ public class MoexResponse implements ExchangeDateSnapshot {
         private List<String> columns;
         private List<List<Object>> data;
     }
+
+    /**
+     * Вложенный класс, представляющий метаданные для курсора истории.
+     * <p>Метаданные включают индекс текущей страницы, общее количество страниц и размер страницы.</p>
+     */
     @Data
     @Accessors(fluent = true)
     public static class CursorMetadata {
@@ -134,6 +172,11 @@ public class MoexResponse implements ExchangeDateSnapshot {
         @SerializedName("PAGESIZE")
         private FieldType<Integer> pageSize;
     }
+
+    /**
+     * Вложенный класс, представляющий одну запись о сделке на бирже.
+     * <p>Каждая запись содержит информацию о сделке, такую как цена, объем, количество сделок, дата сделки и другие данные.</p>
+     */
     @Data
     @Accessors(fluent = true)
     public static class TradeRecord implements ExchangeTradeRecord {
@@ -164,3 +207,4 @@ public class MoexResponse implements ExchangeDateSnapshot {
         private Date tradeSessionDate;
     }
 }
+

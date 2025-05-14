@@ -1,7 +1,6 @@
 package ru.mslotvi.util;
 
 import lombok.experimental.UtilityClass;
-import ru.mslotvi.exchange.ExchangeBoard;
 import ru.mslotvi.exchange.ExchangeDateSnapshot;
 import ru.mslotvi.exchange.ExchangeSecuritie;
 import ru.mslotvi.exchange.ExchangeTradeRecord;
@@ -58,7 +57,6 @@ public class MathUtil {
 
         return Math.sqrt(sumOfSquaredDifferences / (n - 1));
     }
-    // Модель для хранения данных о ковариантности
     public record CovariantCompanyModel(ExchangeSecuritie company1, ExchangeSecuritie company2, double covariance) {
     }
 
@@ -78,7 +76,6 @@ public class MathUtil {
             }
         }
 
-        // Если у нас есть валидные данные, рассчитываем среднюю доходность
         if (validRecordsCount > 0) {
             return sumReturns / validRecordsCount;
         } else {
@@ -100,11 +97,9 @@ public class MathUtil {
         List<ExchangeDateSnapshot> snapshots1 = company1.lastLoadMarketHistory();
         List<ExchangeDateSnapshot> snapshots2 = company2.lastLoadMarketHistory();
 
-        // Извлекаем торговые дни и соответствующие цены закрытия для каждой компании
         Map<Date, Double> company1ClosingPrices = extractClosingPricesByDate(snapshots1);
         Map<Date, Double> company2ClosingPrices = extractClosingPricesByDate(snapshots2);
 
-        // Находим общие дни торговли
         Set<Date> commonTradeDays = new HashSet<>(company1ClosingPrices.keySet());
         commonTradeDays.retainAll(company2ClosingPrices.keySet());  // Оставляем только общие дни
 
@@ -112,7 +107,6 @@ public class MathUtil {
             throw new IllegalArgumentException("Нет общих дней торговли между компаниями.");
         }
 
-        // Собираем цены закрытия для общих дней торговли
         List<Double> closes1 = new ArrayList<>();
         List<Double> closes2 = new ArrayList<>();
 
@@ -121,11 +115,9 @@ public class MathUtil {
             closes2.add(company2ClosingPrices.get(tradeDay));
         }
 
-        // Рассчитываем средние значения
         double mean1 = calculateMean(closes1);
         double mean2 = calculateMean(closes2);
 
-        // Вычисляем ковариантность
         double covariance = 0.0;
         for (int i = 0; i < closes1.size(); i++) {
             double deviation1 = closes1.get(i) - mean1;

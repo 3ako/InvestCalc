@@ -34,29 +34,14 @@ public class MoexExchange implements Exchange {
         this.moexConfig = moexConfig;
     }
 
-    /**
-     * Вычисляет эффективную линию для всех ценных бумаг.
-     *
-     * @return Объект эффективной линии, который содержит все необходимые данные.
-     */
-    public PortfolioCalculator createPorfolioCalculator(LocalDate start, LocalDate end) {
-        return createPorfolioCalculator(securities.values().stream()
-                .map(e -> (ExchangeSecuritie) e)
-                .toList(), start, end);
-    }
-
     public PortfolioCalculator createPorfolioCalculator(List<ExchangeSecuritie> allSecurities, LocalDate start, LocalDate end) {
-
-        System.out.println(allSecurities +" -+++");
 
         allSecurities.forEach(s -> s.loadMarketHistory(start, end));
 
-        PortfolioCalculator frontier = new PortfolioCalculator(allSecurities);
-
-        return frontier;
+        return new PortfolioCalculator(allSecurities);
     }
 
-    public PortfolioCalculator getEfficientFrontier(Set<String> ids, LocalDate start, LocalDate end) {
+    public PortfolioCalculator createPortfolioCalculator(Set<String> ids, LocalDate start, LocalDate end) {
         return createPorfolioCalculator(ids.stream().map(i -> (ExchangeSecuritie) securities.get(i)).filter(Objects::nonNull).toList(), start, end);
     }
 
@@ -84,7 +69,6 @@ public class MoexExchange implements Exchange {
 
             loadSecurities();
 
-            System.out.println(securities.keySet());
             log.info("Load {} securities", securities.values().size());
         });
     }

@@ -133,7 +133,6 @@ public class MoexSecuritie implements ExchangeSecuritie {
     @Override
     @SneakyThrows
     public List<ExchangeDateSnapshot> loadMarketHistory(LocalDate from, LocalDate to) {
-        System.out.println("Load market history: "+ shortName);
         marketHistory.clear();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String fromDate = from.format(dateFormat);
