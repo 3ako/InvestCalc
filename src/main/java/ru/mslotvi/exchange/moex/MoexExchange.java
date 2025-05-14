@@ -1,0 +1,104 @@
+package ru.mslotvi.exchange.moex;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import lombok.Data;
+import lombok.SneakyThrows;
+import lombok.experimental.Accessors;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
+import ru.mslotvi.config.MoexConfig;
+import ru.mslotvi.exchange.PortfolioCalculator;
+import ru.mslotvi.exchange.Exchange;
+import ru.mslotvi.exchange.ExchangeBoard;
+import ru.mslotvi.exchange.ExchangeSecuritie;
+import ru.mslotvi.http.HttpRequestService;
+
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+@Data
+@Accessors(fluent = true)
+@Component
+@Log4j2
+public class MoexExchange implements Exchange {
+    private final MoexConfig moexConfig;
+    private final Map<String, MoexSecuritie> securities = new HashMap<>();
+
+    public MoexExchange(MoexConfig moexConfig) {
+        this.moexConfig = moexConfig;
+    }
+
+    /**
+     * Вычисляет эффективную линию для всех ценных бумаг.
+     *
+     * @return Объект эффективной линии, который содержит все необходимые данные.
+     */
+    public PortfolioCalculator createPorfolioCalculator(LocalDate start, LocalDate end) {
+        return createPorfolioCalculator(securities.values().stream()
+                .map(e -> (ExchangeSecuritie) e)
+                .toList(), start, end);
+    }
+
+    public PortfolioCalculator createPorfolioCalculator(List<ExchangeSecuritie> allSecurities, LocalDate start, LocalDate end) {
+
+        System.out.println(allSecurities +" -+++");
+
+        allSecurities.forEach(s -> s.loadMarketHistory(start, end));
+
+        PortfolioCalculator frontier = new PortfolioCalculator(allSecurities);
+
+        return frontier;
+    }
+
+    public PortfolioCalculator getEfficientFrontier(Set<String> ids, LocalDate start, LocalDate end) {
+        return createPorfolioCalculator(ids.stream().map(i -> (ExchangeSecuritie) securities.get(i)).filter(Objects::nonNull).toList(), start, end);
+    }
+
+
+    @SneakyThrows
+    public void loadSecurities() {
+
+        securities.clear();
+
+        String response = HttpRequestService.sendGetRequest(URI.create(moexConfig.getSecuritiesEntryPoint()+".json"));
+        Type securityListType = new TypeToken<List<MoexSecuritie>>(){}.getType();
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(securityListType, new SecurityDeserializer(moexConfig))
+                .create();
+
+        List<MoexSecuritie> moexResponse = gson.fromJson(response, securityListType);
+
+        moexResponse.forEach(r -> securities.put(r.secId(), r));
+    }
+
+    @Override
+    public CompletableFuture<Void> loadData() {
+        return CompletableFuture.runAsync(() -> {
+
+            loadSecurities();
+
+            System.out.println(securities.keySet());
+            log.info("Load {} securities", securities.values().size());
+        });
+    }
+
+
+    @Override
+    public List<ExchangeBoard> getBoards() {
+        return List.of(MoexBoard.values());
+    }
+
+    @Override
+    public Map<String, ExchangeSecuritie> getSecurities() {
+        return securities.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+}

@@ -1,0 +1,3 @@
+moex:
+  entry-point: https://iss.moex.com/iss/history/engines/stock/markets/shares/securities
+  securities-entry-point: https://iss.moex.com/iss/engines/stock/markets/shares/securities
