@@ -1,0 +1,3 @@
+jwt:
+  secret: diplometobolkotorayameshayetrabotat
+  expiration: 86400000

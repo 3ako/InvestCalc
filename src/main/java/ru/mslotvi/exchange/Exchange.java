@@ -56,4 +56,8 @@ public interface Exchange {
      * @return Объект {@link PortfolioCalculator}, который будет использоваться для дальнейших расчетов эффективной линии.
      */
     PortfolioCalculator createPortfolioCalculator(Set<String> ids, LocalDate start, LocalDate end);
+
+    List<Portfolio> generatePortfolios(Set<String> ids, LocalDate start, LocalDate end, int amount);
+
+    String name();
 }

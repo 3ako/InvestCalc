@@ -9,10 +9,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import ru.mslotvi.config.MoexConfig;
-import ru.mslotvi.exchange.PortfolioCalculator;
-import ru.mslotvi.exchange.Exchange;
-import ru.mslotvi.exchange.ExchangeBoard;
-import ru.mslotvi.exchange.ExchangeSecuritie;
+import ru.mslotvi.exchange.*;
 import ru.mslotvi.http.HttpRequestService;
 
 import java.lang.reflect.Type;
@@ -27,6 +24,7 @@ import java.util.stream.Collectors;
 @Component
 @Log4j2
 public class MoexExchange implements Exchange {
+    private final String name = "MOEX";
     private final MoexConfig moexConfig;
     private final Map<String, MoexSecuritie> securities = new HashMap<>();
 
@@ -34,7 +32,7 @@ public class MoexExchange implements Exchange {
         this.moexConfig = moexConfig;
     }
 
-    public PortfolioCalculator createPorfolioCalculator(List<ExchangeSecuritie> allSecurities, LocalDate start, LocalDate end) {
+    public PortfolioCalculator createPortfolioCalculator(List<ExchangeSecuritie> allSecurities, LocalDate start, LocalDate end) {
 
         allSecurities.forEach(s -> s.loadMarketHistory(start, end));
 
@@ -42,7 +40,14 @@ public class MoexExchange implements Exchange {
     }
 
     public PortfolioCalculator createPortfolioCalculator(Set<String> ids, LocalDate start, LocalDate end) {
-        return createPorfolioCalculator(ids.stream().map(i -> (ExchangeSecuritie) securities.get(i)).filter(Objects::nonNull).toList(), start, end);
+        return createPortfolioCalculator(ids.stream().map(i -> (ExchangeSecuritie) securities.get(i)).filter(Objects::nonNull).toList(), start, end);
+    }
+
+    @Override
+    public List<Portfolio> generatePortfolios(Set<String> ids, LocalDate start, LocalDate end, int amount) {
+        var calculator = createPortfolioCalculator(ids, start, end);
+        calculator.generatePortfolios(amount);
+        return calculator.getPortfolios();
     }
 
 

@@ -1,5 +1,6 @@
 package ru.mslotvi.exchange;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  * <p>Этот интерфейс описывает основные методы для работы с ценными бумагами, такими как получение их
  * идентификаторов, загрузка исторических данных о сделках, а также расчет отклонений и ожидаемой доходности.</p>
  */
-public interface ExchangeSecuritie {
+public interface ExchangeSecuritie extends Serializable {
 
     /**
      * Получает краткое название ценной бумаги.

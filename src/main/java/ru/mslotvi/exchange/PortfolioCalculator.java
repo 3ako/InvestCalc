@@ -26,33 +26,7 @@ public class PortfolioCalculator {
      * @return Список портфелей, которые составляют эффективную линию.
      */
     public List<Portfolio> calculateEfficientFrontier(int precision) {
-        Map<Double, Portfolio> efficientPortfolios = new HashMap<>();
-
-        for (Portfolio portfolio : portfolios) {
-            double portfolioRisk = portfolio.getRisk();
-            double portfolioReturn = portfolio.getExpectedReturn();
-
-            double roundedRisk = roundToPrecision(portfolioRisk, precision);
-
-            if (!efficientPortfolios.containsKey(roundedRisk) ||
-                    efficientPortfolios.get(roundedRisk).getExpectedReturn() < portfolioReturn) {
-                efficientPortfolios.put(roundedRisk, portfolio);
-            }
-        }
-
-        return new ArrayList<>(efficientPortfolios.values());
-    }
-
-    /**
-     * Метод для округления числа до заданного количества знаков после запятой.
-     *
-     * @param value Число, которое нужно округлить.
-     * @param precision Количество знаков после запятой, до которых нужно округлить.
-     * @return Округленное значение.
-     */
-    private double roundToPrecision(double value, int precision) {
-        double scale = Math.pow(10, precision);
-        return Math.round(value * scale) / scale;
+        return MathUtil.calculateEfficientFrontier(this.portfolios, precision);
     }
 
     public List<Portfolio> getPortfolios() {

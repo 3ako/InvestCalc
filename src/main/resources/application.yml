@@ -6,11 +6,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   config:
-    import: moex.yml
+    import: [moex.yml, jwt.yml]
 
   jpa:
     hibernate:
       ddl-auto: update  # Стратегия создания и обновления базы данных
-    show-sql: true  # Показывать SQL-запросы
+    show-sql: false  # Показывать SQL-запросы
     properties:
       hibernate.format_sql: true  # Форматирование SQL-запросов

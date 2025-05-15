@@ -1,6 +1,7 @@
 package ru.mslotvi.util;
 
 import lombok.experimental.UtilityClass;
+import ru.mslotvi.exchange.DefaultPortfolio;
 import ru.mslotvi.exchange.ExchangeDateSnapshot;
 import ru.mslotvi.exchange.ExchangeSecuritie;
 import ru.mslotvi.exchange.ExchangeTradeRecord;
@@ -21,6 +22,47 @@ public class MathUtil {
             sum += close;
         }
         return sum / closes.length;
+    }
+
+    /**
+     * Метод для округления числа до заданного количества знаков после запятой.
+     *
+     * @param value Число, которое нужно округлить.
+     * @param precision Количество знаков после запятой, до которых нужно округлить.
+     * @return Округленное значение.
+     */
+    public double roundToPrecision(double value, int precision) {
+        double scale = Math.pow(10, precision);
+        return Math.round(value * scale) / scale;
+    }
+
+    /**
+     * Метод для вычисления эффективной линии на основе существующих портфелей.
+     * Эффективная линия представляет собой список портфелей, которые являются
+     * оптимальными для разных уровней риска.
+     *
+     * Для каждого уровня риска выбирается портфель с максимальной доходностью.
+     * Риск округляется до указанного количества знаков после запятой.
+     *
+     * @param precision Количество знаков после запятой, до которых следует округлять риск.
+     * @return Список портфелей, которые составляют эффективную линию.
+     */
+    public <T extends DefaultPortfolio> List<T> calculateEfficientFrontier(List<T> portfolios, int precision) {
+        Map<Double, T> efficientPortfolios = new HashMap<>();
+
+        for (T portfolio : portfolios) {
+            double portfolioRisk = portfolio.risk();
+            double portfolioReturn = portfolio.expectedReturn();
+
+            double roundedRisk = roundToPrecision(portfolioRisk, precision);
+
+            if (!efficientPortfolios.containsKey(roundedRisk) ||
+                    efficientPortfolios.get(roundedRisk).expectedReturn() < portfolioReturn) {
+                efficientPortfolios.put(roundedRisk, portfolio);
+            }
+        }
+
+        return new ArrayList<>(efficientPortfolios.values());
     }
 
     /**
