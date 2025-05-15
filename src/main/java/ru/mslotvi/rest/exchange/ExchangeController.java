@@ -2,17 +2,23 @@ package ru.mslotvi.rest.exchange;
 
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.mslotvi.exchange.Exchange;
-import ru.mslotvi.exchange.ExchangeBoard;
-import ru.mslotvi.exchange.ExchangeService;
+import ru.mslotvi.data.StoragePortfolio;
+import ru.mslotvi.exchange.*;
 import ru.mslotvi.util.MathUtil;
 
+import java.io.ByteArrayOutputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -82,6 +88,35 @@ public class ExchangeController {
         var result = MathUtil.calculateEfficientFrontier(portfolios, precision).stream().map(PortfolioDto::from).toList();
 
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/calculateEffectiveFrontierCalc")
+    @PreAuthorize("hasRole('MEMBER')")
+    @SneakyThrows
+    public ResponseEntity<byte[]> calculateEffectiveFrontierPdf(
+            @RequestParam Instant start,
+            @Nullable @RequestParam Instant end,
+            int precision) {
+
+        Instant endDate = end != null ? end : Instant.now();
+
+        var portfolios = exchangeService.getStoragePortfolios(start, endDate);
+
+        List<StoragePortfolio> result = MathUtil.calculateEfficientFrontier(portfolios, precision);
+        Workbook workbook = EfficientFrontierWorkbook.createEfficientFrontierWorkbook(result);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename("EfficientFrontier.xlsx")
+                .build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(outputStream.toByteArray());
     }
 
     @GetMapping("/{exchangeId}/generatePortfolio")

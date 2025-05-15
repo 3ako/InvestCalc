@@ -27,6 +27,9 @@ repositories {
 
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.apache.poipoi-ooxml
+    implementation("org.apache.poi:poi-ooxml:5.4.1")
+    implementation("org.apache.poi:poi:5.4.1")
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")

@@ -9,7 +9,10 @@ import ru.mslotvi.data.StoragePortfolio;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Log4j2
 @Service
@@ -27,6 +30,7 @@ public class ExchangeService {
     public List<StoragePortfolio> getStoragePortfolios(Instant from, Instant to) {
         return portfolioRepository.findByCreateDateBetween(from, to);
     }
+
 
     public List<StoragePortfolio> generatePortfolios(String exchangeId, LocalDate start, LocalDate end, Set<String> ids, int amount) {
         var exchange = exchanges.get(exchangeId);
