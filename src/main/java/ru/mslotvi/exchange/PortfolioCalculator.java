@@ -29,10 +29,6 @@ public class PortfolioCalculator {
         return MathUtil.calculateEfficientFrontier(this.portfolios, precision);
     }
 
-    public List<Portfolio> getPortfolios() {
-        return Collections.unmodifiableList(portfolios);
-    }
-
     /**
      * Генерирует заданное количество случайных портфелей и добавляет их в список {@link List<Portfolio>}.
      *
@@ -59,11 +55,6 @@ public class PortfolioCalculator {
             portfolios.add(portfolio);
         }
     }
-
-    public void clearPortfolios() {
-        portfolios.clear();
-    }
-
 
     /**
      * Генерирует случайный портфель с нормализованными весами для активов,
@@ -138,5 +129,12 @@ public class PortfolioCalculator {
         }
 
         return new Portfolio(weightMap, portfolioReturn, portfolioRisk);
+    }
+    public void clearPortfolios() {
+        portfolios.clear();
+    }
+
+    public List<Portfolio> getPortfolios() {
+        return Collections.unmodifiableList(portfolios);
     }
 }

@@ -50,7 +50,7 @@ public interface ExchangeTradeRecord {
      *
      * @return Количество сделок.
      */
-    Double numTrades();
+    Double с();
 
     /**
      * Получает общую стоимость сделок по данной ценной бумаге за торговый день.

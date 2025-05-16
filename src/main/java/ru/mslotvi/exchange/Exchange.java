@@ -57,6 +57,24 @@ public interface Exchange {
      */
     PortfolioCalculator createPortfolioCalculator(Set<String> ids, LocalDate start, LocalDate end);
 
+    /**
+     * Генерирует список портфелей на основе заданных параметров.
+     *
+     * @param ids    Множество идентификаторов активов, которые должны быть включены в портфели
+     * @param start  Начальная дата периода для расчета исторических данных
+     * @param end    Конечная дата периода для расчета исторических данных
+     * @param amount Количество генерируемых портфелей (должно быть >= 1)
+     *
+     * @return Список сгенерированных портфелей, где каждый портфель содержит:
+     *         - Веса активов (нормализованные, сумма весов = 1.0)
+     *         - Ожидаемую доходность
+     *         - Риск (стандартное отклонение)
+     *
+     * @throws IllegalArgumentException если:
+     *         - ids пустое или null
+     *         - start после end
+     *         - amount < 1
+     */
     List<Portfolio> generatePortfolios(Set<String> ids, LocalDate start, LocalDate end, int amount);
 
     String name();

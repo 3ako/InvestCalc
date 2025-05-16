@@ -32,7 +32,6 @@ public class StoragePortfolio implements DefaultPortfolio {
         return securities;
     }
 
-
     @Override
     public double expectedReturn() {
         return expectedReturn;
